@@ -30,11 +30,11 @@
 4. Выбераем "VDLimits.xcframework" и нажимаем на кнопку "Open".
 ![Шаг четвертый](images/qa3.png)
  
-5. Загружаем, распаковываем и копируем Resources.bundle к себе в проект по ссылке https://raw.githubusercontent.com/RusLab/VDLimit_iOS/main/Resources.bundle.zip
-![Шаг пятый](images/spm4.png)
+5. Вот так должно получиться у вас.
+![Результат](images/qa4.png)
 
-6. Вот так должно получиться у вас.
-![Результат](images/qa5.png)
+6. Загружаем, распаковываем и копируем Resources.bundle к себе в проект по ссылке https://raw.githubusercontent.com/RusLab/VDLimit_iOS/main/Resources.bundle.zip
+![Шаг пятый](images/spm4.png)
 
 ### - Установка через SPM
 
@@ -50,9 +50,10 @@
 # 3. Инициализируйте библиотеку Vsegda.da
 
 Для тестирования укажите:
+```
 apiKey = ab322ac38fb3ed3b27432cbdf7d213b2
 apiSecret = c8e1b726d858ed2128a231bae250b875
-
+```
 получить одобрение: отчество - Одобреевич
 
 ```swift

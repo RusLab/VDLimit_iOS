@@ -9,6 +9,6 @@ let package = Package(
     ],
     dependencies: [],
     targets: [
-        .binaryTarget(name: "VDLimits", path: "./VDLimits-v1.0.0.xcframework"),
+        .binaryTarget(name: "VDLimits", path: "./VDLimits.xcframework"),
     ]
 )
