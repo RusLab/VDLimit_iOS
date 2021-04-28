@@ -27,27 +27,27 @@ public enum VDResult {
   case approved
   case rejected
   case waiting
-  public static func == (a: VDResult, b: VDResult) -> Swift.Bool
+  public static func == (a: VDLimits.VDResult, b: VDLimits.VDResult) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
 }
 public protocol VDLimitsProtocol : AnyObject {
-  func vdLimitsResult(_ response: VDResponse)
+  func vdLimitsResult(_ response: VDLimits.VDResponse)
   func vdLimitsError(message error: Swift.String)
-  func vdLimitsDismiss(from: VDResult)
+  func vdLimitsDismiss(from: VDLimits.VDResult)
 }
 public class VDLimits {
   public struct Config {
     public init(apiKey: Swift.String, apiSecret: Swift.String, userNumber: Swift.String, userId: Swift.String, needAuth: Swift.Bool = true)
   }
-  public init(with config: Config, delegate: VDLimitsProtocol?)
+  public init(with config: VDLimits.VDLimits.Config, delegate: VDLimits.VDLimitsProtocol?)
   public func start(with navController: UIKit.UINavigationController? = nil)
   @objc deinit
 }
 @_hasMissingDesignatedInitializers final public class VDTheme {
-  public static var defaultTheme: VDTheme
+  public static var defaultTheme: VDLimits.VDTheme
   final public var primaryBackgroundColor: UIKit.UIColor
   final public var secondaryBackgroundColor: UIKit.UIColor
   final public var primaryForegroundColor: UIKit.UIColor
