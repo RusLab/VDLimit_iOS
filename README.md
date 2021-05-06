@@ -49,11 +49,6 @@
 
 # 3. Инициализируйте библиотеку Vsegda.da
 
-Для тестирования укажите:
-```
-apiKey = ab322ac38fb3ed3b27432cbdf7d213b2
-apiSecret = c8e1b726d858ed2128a231bae250b875
-```
 получить одобрение: отчество - Одобреевич
 
 ```swift
@@ -135,7 +130,7 @@ public var accentColor: UIColor
 public var errorColor: UIColor
 ```
 
-Изменение шрифтов(При назначении шрифтов используется только его семейство, размеры не учитываются.):
+Изменение шрифтов (При назначении шрифтов используется только его семейство, размеры не учитываются):
 
 ```swift
 public var fontRegular: UIFont
@@ -148,7 +143,6 @@ public var fontBold: UIFont
 
 ```swift
 VDTheme.defaultTheme.accentColor = UIColor.init { (trait) -> UIColor in
-                return trait.userInterfaceStyle == .dark ? UIColor.green : UIColor.blue
-            }
-            
+    return trait.userInterfaceStyle == .dark ? UIColor.green : UIColor.blue
+}            
 ```
