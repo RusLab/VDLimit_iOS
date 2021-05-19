@@ -3,21 +3,48 @@
 // swift-module-flags: -target arm64-apple-ios12.1 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -module-name VDLimits
 import AVFoundation
 import AVKit
+import Accelerate
 import AudioToolbox
+import Combine
+import CommonCrypto
 import CommonCrypto/*.CC_LONG*/
 import CommonCrypto/*.CC_MD5*/
 import CommonCrypto/*.CC_MD5_DIGEST_LENGTH*/
 import CoreFoundation
+import CoreGraphics
+import CoreImage
 import CryptoKit
 import Foundation
+import ImageIO
+import MobileCoreServices
 import NotificationCenter
 import PDFKit
 import PhotosUI
 import QuartzCore
 import Security
 import Swift
+import SwiftUI
 import UIKit.UIGestureRecognizerSubclass
 import UIKit
+infix operator |> : AdditionPrecedence
+@objc public class PanModalPresentationAnimator : ObjectiveC.NSObject {
+  public enum TransitionStyle {
+    case presentation
+    case dismissal
+    public static func == (a: VDLimits.PanModalPresentationAnimator.TransitionStyle, b: VDLimits.PanModalPresentationAnimator.TransitionStyle) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  required public init(transitionStyle: VDLimits.PanModalPresentationAnimator.TransitionStyle)
+  @objc override dynamic public init()
+  @objc deinit
+}
+extension PanModalPresentationAnimator : UIKit.UIViewControllerAnimatedTransitioning {
+  @objc dynamic public func transitionDuration(using transitionContext: UIKit.UIViewControllerContextTransitioning?) -> Foundation.TimeInterval
+  @objc dynamic public func animateTransition(using transitionContext: UIKit.UIViewControllerContextTransitioning)
+}
 public enum VDResponse {
   case approved(limit: Swift.Double, expiration: Swift.String)
   case rejected
@@ -27,27 +54,144 @@ public enum VDResult {
   case approved
   case rejected
   case waiting
-  public static func == (a: VDResult, b: VDResult) -> Swift.Bool
+  public static func == (a: VDLimits.VDResult, b: VDLimits.VDResult) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
 }
 public protocol VDLimitsProtocol : AnyObject {
-  func vdLimitsResult(_ response: VDResponse)
+  func vdLimitsResult(_ response: VDLimits.VDResponse)
   func vdLimitsError(message error: Swift.String)
-  func vdLimitsDismiss(from: VDResult)
+  func vdLimitsDismiss(from: VDLimits.VDResult)
+}
+@objc @_inheritsConvenienceInitializers public class PanModalPresentationDelegate : ObjectiveC.NSObject {
+  public static var `default`: VDLimits.PanModalPresentationDelegate
+  @objc override dynamic public init()
+  @objc deinit
+}
+extension PanModalPresentationDelegate : UIKit.UIViewControllerTransitioningDelegate {
+  @objc dynamic public func animationController(forPresented presented: UIKit.UIViewController, presenting: UIKit.UIViewController, source: UIKit.UIViewController) -> UIKit.UIViewControllerAnimatedTransitioning?
+  @objc dynamic public func animationController(forDismissed dismissed: UIKit.UIViewController) -> UIKit.UIViewControllerAnimatedTransitioning?
+  @objc dynamic public func presentationController(forPresented presented: UIKit.UIViewController, presenting: UIKit.UIViewController?, source: UIKit.UIViewController) -> UIKit.UIPresentationController?
+}
+extension PanModalPresentationDelegate : UIKit.UIAdaptivePresentationControllerDelegate, UIKit.UIPopoverPresentationControllerDelegate {
+  @objc dynamic public func adaptivePresentationStyle(for controller: UIKit.UIPresentationController, traitCollection: UIKit.UITraitCollection) -> UIKit.UIModalPresentationStyle
+}
+extension PanModalPresentable where Self : UIKit.UIViewController {
+  public typealias AnimationBlockType = () -> Swift.Void
+  public typealias AnimationCompletionType = (Swift.Bool) -> Swift.Void
+  public typealias LayoutType = UIKit.UIViewController & VDLimits.PanModalPresentable
+  public func panModalTransition(to state: VDLimits.PanModalPresentationController.PresentationState)
+  public func panModalSetContentOffset(offset: CoreGraphics.CGPoint)
+  public func panModalSetNeedsLayoutUpdate()
+  public func panModalAnimate(_ animationBlock: @escaping Self.AnimationBlockType, _ completion: Self.AnimationCompletionType? = nil)
+}
+public enum PanModalBackgroundInteraction : Swift.Equatable {
+  case dismiss
+  case forward
+  case none
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: VDLimits.PanModalBackgroundInteraction, b: VDLimits.PanModalBackgroundInteraction) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers public class PanModalPresentationController : UIKit.UIPresentationController {
+  public enum PresentationState {
+    case shortForm
+    case longForm
+    public static func == (a: VDLimits.PanModalPresentationController.PresentationState, b: VDLimits.PanModalPresentationController.PresentationState) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  @objc override dynamic public var presentedView: UIKit.UIView {
+    @objc get
+  }
+  @objc deinit
+  @objc override dynamic public func containerViewWillLayoutSubviews()
+  @objc override dynamic public func presentationTransitionWillBegin()
+  @objc override dynamic public func dismissalTransitionWillBegin()
+  @objc override dynamic public func presentationTransitionDidEnd(_ completed: Swift.Bool)
+  @objc override dynamic public func viewWillTransition(to size: CoreGraphics.CGSize, with coordinator: UIKit.UIViewControllerTransitionCoordinator)
+  @objc override dynamic public init(presentedViewController: UIKit.UIViewController, presenting presentingViewController: UIKit.UIViewController?)
+}
+extension PanModalPresentationController {
+  public func transition(to state: VDLimits.PanModalPresentationController.PresentationState)
+  public func setContentOffset(offset: CoreGraphics.CGPoint)
+  public func setNeedsLayoutUpdate()
+}
+extension PanModalPresentationController : UIKit.UIGestureRecognizerDelegate {
+  @objc dynamic public func gestureRecognizer(_ gestureRecognizer: UIKit.UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIKit.UIGestureRecognizer) -> Swift.Bool
+  @objc dynamic public func gestureRecognizer(_ gestureRecognizer: UIKit.UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIKit.UIGestureRecognizer) -> Swift.Bool
+}
+@objc @_hasMissingDesignatedInitializers public class DimmedView : UIKit.UIView {
+  @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc override dynamic public func hitTest(_ point: CoreGraphics.CGPoint, with event: UIKit.UIEvent?) -> UIKit.UIView?
+  @objc override dynamic public init(frame: CoreGraphics.CGRect)
+  @objc deinit
+}
+public protocol PanModalPresentable : AnyObject {
+  var panScrollable: UIKit.UIScrollView? { get }
+  var topOffset: CoreGraphics.CGFloat { get }
+  var shortFormHeight: VDLimits.PanModalHeight { get }
+  var longFormHeight: VDLimits.PanModalHeight { get }
+  var cornerRadius: CoreGraphics.CGFloat { get }
+  var springDamping: CoreGraphics.CGFloat { get }
+  var transitionDuration: Swift.Double { get }
+  var transitionAnimationOptions: UIKit.UIView.AnimationOptions { get }
+  var backgroundAlpha: CoreGraphics.CGFloat { get }
+  var scrollIndicatorInsets: UIKit.UIEdgeInsets { get }
+  var anchorModalToLongForm: Swift.Bool { get }
+  var allowsExtendedPanScrolling: Swift.Bool { get }
+  var allowsDragToDismiss: Swift.Bool { get }
+  var backgroundInteraction: VDLimits.PanModalBackgroundInteraction { get }
+  var isUserInteractionEnabled: Swift.Bool { get }
+  var isHapticFeedbackEnabled: Swift.Bool { get }
+  var shouldRoundTopCorners: Swift.Bool { get }
+  var showDragIndicator: Swift.Bool { get }
+  func shouldRespond(to panModalGestureRecognizer: UIKit.UIPanGestureRecognizer) -> Swift.Bool
+  func willRespond(to panModalGestureRecognizer: UIKit.UIPanGestureRecognizer)
+  func shouldPrioritize(panModalGestureRecognizer: UIKit.UIPanGestureRecognizer) -> Swift.Bool
+  func shouldTransition(to state: VDLimits.PanModalPresentationController.PresentationState) -> Swift.Bool
+  func willTransition(to state: VDLimits.PanModalPresentationController.PresentationState)
+  func panModalWillDismiss()
+}
+public protocol LayoutAttributesAnimator {
+  func animate(collectionView: UIKit.UICollectionView, attributes: VDLimits.AnimatedCollectionViewLayoutAttributes)
+}
+public enum PanModalHeight : Swift.Equatable {
+  case maxHeight
+  case maxHeightWithTopInset(CoreGraphics.CGFloat)
+  case contentHeight(CoreGraphics.CGFloat)
+  case contentHeightIgnoringSafeArea(CoreGraphics.CGFloat)
+  case intrinsicHeight
+  public static func == (a: VDLimits.PanModalHeight, b: VDLimits.PanModalHeight) -> Swift.Bool
+}
+public struct CubeAttributesAnimator : VDLimits.LayoutAttributesAnimator {
+  public var perspective: CoreGraphics.CGFloat
+  public var totalAngle: CoreGraphics.CGFloat
+  public init(perspective: CoreGraphics.CGFloat = -1 / 500, totalAngle: CoreGraphics.CGFloat = .pi / 2)
+  public func animate(collectionView: UIKit.UICollectionView, attributes: VDLimits.AnimatedCollectionViewLayoutAttributes)
 }
 public class VDLimits {
   public struct Config {
     public init(apiKey: Swift.String, apiSecret: Swift.String, userNumber: Swift.String, userId: Swift.String, needAuth: Swift.Bool = true)
   }
-  public init(with config: Config, delegate: VDLimitsProtocol?)
+  public init(with config: VDLimits.VDLimits.Config, delegate: VDLimits.VDLimitsProtocol?)
   public func start(with navController: UIKit.UINavigationController? = nil)
   @objc deinit
 }
+extension UIViewController {
+  public var isPanModalPresented: Swift.Bool {
+    get
+  }
+  public func presentPanModal(_ viewControllerToPresent: UIKit.UIViewController & VDLimits.PanModalPresentable, sourceView: UIKit.UIView? = nil, sourceRect: CoreGraphics.CGRect = .zero)
+}
 @_hasMissingDesignatedInitializers final public class VDTheme {
-  public static var defaultTheme: VDTheme
+  public static var defaultTheme: VDLimits.VDTheme
   final public var primaryBackgroundColor: UIKit.UIColor
   final public var secondaryBackgroundColor: UIKit.UIColor
   final public var primaryForegroundColor: UIKit.UIColor
@@ -58,5 +202,92 @@ public class VDLimits {
   final public var fontMedium: UIKit.UIFont
   final public var fontSemiBold: UIKit.UIFont
   final public var fontBold: UIKit.UIFont
+  @objc deinit
+}
+extension PanModalPresentable where Self : UIKit.UIViewController {
+  public var topOffset: CoreGraphics.CGFloat {
+    get
+  }
+  public var shortFormHeight: VDLimits.PanModalHeight {
+    get
+  }
+  public var longFormHeight: VDLimits.PanModalHeight {
+    get
+  }
+  public var cornerRadius: CoreGraphics.CGFloat {
+    get
+  }
+  public var springDamping: CoreGraphics.CGFloat {
+    get
+  }
+  public var transitionDuration: Swift.Double {
+    get
+  }
+  public var transitionAnimationOptions: UIKit.UIView.AnimationOptions {
+    get
+  }
+  public var backgroundAlpha: CoreGraphics.CGFloat {
+    get
+  }
+  public var scrollIndicatorInsets: UIKit.UIEdgeInsets {
+    get
+  }
+  public var anchorModalToLongForm: Swift.Bool {
+    get
+  }
+  public var allowsExtendedPanScrolling: Swift.Bool {
+    get
+  }
+  public var allowsDragToDismiss: Swift.Bool {
+    get
+  }
+  public var allowsTapToDismiss: Swift.Bool {
+    get
+  }
+  public var backgroundInteraction: VDLimits.PanModalBackgroundInteraction {
+    get
+  }
+  public var isUserInteractionEnabled: Swift.Bool {
+    get
+  }
+  public var isHapticFeedbackEnabled: Swift.Bool {
+    get
+  }
+  public var shouldRoundTopCorners: Swift.Bool {
+    get
+  }
+  public var showDragIndicator: Swift.Bool {
+    get
+  }
+  public func shouldRespond(to panModalGestureRecognizer: UIKit.UIPanGestureRecognizer) -> Swift.Bool
+  public func willRespond(to panModalGestureRecognizer: UIKit.UIPanGestureRecognizer)
+  public func shouldTransition(to state: VDLimits.PanModalPresentationController.PresentationState) -> Swift.Bool
+  public func shouldPrioritize(panModalGestureRecognizer: UIKit.UIPanGestureRecognizer) -> Swift.Bool
+  public func willTransition(to state: VDLimits.PanModalPresentationController.PresentationState)
+  public func panModalWillDismiss()
+}
+@objc @_inheritsConvenienceInitializers open class AnimatedCollectionViewLayout : UIKit.UICollectionViewFlowLayout {
+  open var animator: VDLimits.LayoutAttributesAnimator?
+  @objc override dynamic open class var layoutAttributesClass: Swift.AnyClass {
+    @objc get
+  }
+  @objc override dynamic open func layoutAttributesForElements(in rect: CoreGraphics.CGRect) -> [UIKit.UICollectionViewLayoutAttributes]?
+  @objc override dynamic open func shouldInvalidateLayout(forBoundsChange newBounds: CoreGraphics.CGRect) -> Swift.Bool
+  @objc override dynamic open func prepare(forAnimatedBoundsChange oldBounds: CoreGraphics.CGRect)
+  @objc override dynamic open func targetContentOffset(forProposedContentOffset proposedContentOffset: CoreGraphics.CGPoint) -> CoreGraphics.CGPoint
+  @objc override dynamic open func finalizeAnimatedBoundsChange()
+  @objc override dynamic public init()
+  @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers open class AnimatedCollectionViewLayoutAttributes : UIKit.UICollectionViewLayoutAttributes {
+  public var contentView: UIKit.UIView?
+  public var scrollDirection: UIKit.UICollectionView.ScrollDirection
+  public var startOffset: CoreGraphics.CGFloat
+  public var middleOffset: CoreGraphics.CGFloat
+  public var endOffset: CoreGraphics.CGFloat
+  @objc override dynamic open func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  @objc override dynamic open func isEqual(_ object: Any?) -> Swift.Bool
+  @objc override dynamic public init()
   @objc deinit
 }
