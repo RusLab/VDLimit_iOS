@@ -26,6 +26,7 @@ import Swift
 import SwiftUI
 import UIKit.UIGestureRecognizerSubclass
 import UIKit
+import WebKit
 infix operator |> : AdditionPrecedence
 @objc public class PanModalPresentationAnimator : ObjectiveC.NSObject {
   public enum TransitionStyle {
@@ -178,7 +179,7 @@ public struct CubeAttributesAnimator : LayoutAttributesAnimator {
 }
 public class VDLimits {
   public struct Config {
-    public init(apiKey: Swift.String, apiSecret: Swift.String, userNumber: Swift.String, userId: Swift.String, needAuth: Swift.Bool = true)
+    public init(apiKey: Swift.String, apiSecret: Swift.String, userNumber: Swift.String, userId: Swift.String, needAuth: Swift.Bool = true, storiesToggle: Swift.Bool = false)
   }
   public init(with config: Config, delegate: VDLimitsProtocol?)
   public func start(with navController: UIKit.UINavigationController? = nil)
